@@ -12,9 +12,7 @@ function COPY_ITEM()
     end
 end
 
-local frame = CreateFrame("FRAME")
-frame:RegisterEvent("ADDON_LOADED")
-local function eventHandler(event, arg1)
+local function addon_loaded() 
     if NameCopyTooltipTextBool == nil then
         NameCopyTooltipTextBool = true
     else
@@ -38,8 +36,75 @@ local function eventHandler(event, arg1)
                 end
             end
         end)
+    end    
+end
+
+--save & remove a binding
+local function SafeSetBinding(key, action)
+    if key == "" then
+        local oldkey = _G.GetBindingKey(action)
+        if oldkey then
+            _G.SetBinding(oldkey, nil)
+        end
+    else
+        _G.SetBinding(key, action)
+    end
+    _G.SaveBindings(_G.GetCurrentBindingSet())
+end
+
+--set a default binding if no one has it
+local function SetDefaultBinding(key, action)
+    --get our binding
+    local ourkey1,ourkey2 = _G.GetBindingKey(action);
+
+    --if we dont have it
+    if (ourkey1==nil) and (ourkey2==nil) then
+
+        --get possible action for this binding since CTRL-C or CTRL-SHIFT-C look the same
+        local possibleAction = _G.GetBindingByKey(key);
+
+        --by default we could set this binding
+        local okToSet = true;
+
+        --if any action
+        if possibleAction then
+
+            --get the action keys
+            local key1,key2 = _G.GetBindingKey(possibleAction);
+
+            --if any key match our key
+            if (key1 == key) or (key2 == key) then
+                okToSet = false;
+            end
+
+        end
+
+        --if ok to set
+        if okToSet then
+            SafeSetBinding(key,action);
+        end
+
     end
 end
+
+local function entering_world()
+    SetDefaultBinding("CTRL-C", "NAMECOPY")
+end
+
+local frame = CreateFrame("FRAME")
+frame:RegisterEvent("ADDON_LOADED")
+frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+
+local function eventHandler(_, event, arg1)
+    if event == "ADDON_LOADED" then
+        if  arg1 == "NameCopy" then
+            addon_loaded()
+        end
+    elseif event == "PLAYER_ENTERING_WORLD" then
+        entering_world()
+    end
+end
+
 frame:SetScript("OnEvent", eventHandler)
 
 StaticPopupDialogs["ITEM_NAME_NAMECOPY"] =
