@@ -1,5 +1,6 @@
 _G.BINDING_HEADER_NAMECOPY = 'NameCopy Addon'
 _G.BINDING_NAME_NAMECOPY_COPY_ITEM = 'Copy item to clipboard'
+local db
 
 function _G.NAME_COPY_ITEM()
     if _G.GameTooltip:NumLines() > 0 then
@@ -10,7 +11,6 @@ function _G.NAME_COPY_ITEM()
     end
 end
 
-local db = _G.NameCopyTooltipTxteBool
 
 local function tooltip_update(self)
     if db and db ~= nil then
@@ -18,16 +18,19 @@ local function tooltip_update(self)
         if command then
             local tooltipNumLines = _G.GameTooltip:NumLines()
             local tooltipLine = 'Press |cFFFFFF4d' .. command .. '|r to copy the name'
-            local found = false
-            for line_count = 1, tooltipNumLines, 1 do
-                if (_G['GameTooltipTextLeft' .. line_count]:GetText() == tooltipLine) then
-                    found = true
-                    break
+            -- local found = false
+            -- for line_count = 1, tooltipNumLines, 1 do
+            --     if (_G['GameTooltipTextLeft' .. line_count]:GetText() == tooltipLine) then
+            --         found = true
+            --         break
+            --     end
+            -- end
+            if tooltipNumLines > 0 then
+                if (_G["GameTooltipTextLeft" .. tooltipNumLines]:GetText() ~=
+                    tooltipLine) then
+                    self:AddLine(tooltipLine, 0.56, 0.75, 0.99, 1)
+                    self:Show()
                 end
-            end
-            if not found then
-                self:AddLine(tooltipLine, 0.56, 0.75, 0.99, 1)
-                self:Show()
             end
         end
     end
@@ -35,7 +38,6 @@ end
 
 local function hook_tooltips()
     local obj = _G.EnumerateFrames()
-
     while obj do
         if not obj.copyHook then
             if obj:IsObjectType('GameTooltip') then
@@ -48,6 +50,7 @@ local function hook_tooltips()
 end
 
 local function addon_loaded()
+    db = _G.NameCopyTooltipTextBool
     if db == nil then
         db = true
     end
@@ -71,26 +74,21 @@ end
 local function SetDefaultBinding(key, action)
     --get our binding
     local ourkey1, ourkey2 = _G.GetBindingKey(action)
-
     --if we dont have it
     if (ourkey1 == nil) and (ourkey2 == nil) then
         --get possible action for this binding since CTRL-C or CTRL-SHIFT-C look the same
         local possibleAction = _G.GetBindingByKey(key)
-
         --by default we could set this binding
         local okToSet = true
-
         --if any action
         if possibleAction then
             --get the action keys
             local key1, key2 = _G.GetBindingKey(possibleAction)
-
             --if any key match our key
             if (key1 == key) or (key2 == key) then
                 okToSet = false
             end
         end
-
         --if ok to set
         if okToSet then
             SafeSetBinding(key, action)
@@ -102,9 +100,16 @@ local function entering_world()
     SetDefaultBinding('CTRL-C', 'NAMECOPY')
 end
 
+local function save_variables()
+    if db ~= _G.NameCopyTooltipTextBool then
+        _G.NameCopyTooltipTextBool = db
+    end
+end
+
 local frame = _G.CreateFrame('FRAME')
 frame:RegisterEvent('ADDON_LOADED')
 frame:RegisterEvent('PLAYER_ENTERING_WORLD')
+frame:RegisterEvent('PLAYER_LEAVING_WORLD')
 
 local function eventHandler(_, event, arg1)
     if event == 'ADDON_LOADED' then
@@ -113,6 +118,9 @@ local function eventHandler(_, event, arg1)
         end
     elseif event == 'PLAYER_ENTERING_WORLD' then
         entering_world()
+        save_variables()
+    elseif event == 'PLAYER_LEAVING_WORLD' then
+        save_variables()
     end
 end
 
@@ -134,11 +142,11 @@ _G.StaticPopupDialogs['ITEM_NAME_NAMECOPY'] = {
     hasEditBox = true
 }
 
-_G.SLASH_NAMECOPY1 = '/nc'
+_G.SLASH_NAMECOPY1 = "/nc"
 function _G.SlashCmdList.NAMECOPY(_)
     db = not db
     if db then
-        print('|cFF00FF96NameCopy|r will add a line to tooltips')
+        print("|cFF00FF96NameCopy|r will add a line to tooltips")
     else
         print("|cFF00FF96NameCopy|r won't add a line to tooltips anymore")
     end
