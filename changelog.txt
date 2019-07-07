@@ -1,3 +1,5 @@
+version 1.4.1
+    Code improvements
 version 1.4
     Add default binding (Thanks to Cecile)
 version 1.3
