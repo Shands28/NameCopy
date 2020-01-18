@@ -1,8 +1,8 @@
-## Interface: 80200
+## Interface: 80205
 ## Title: NameCopy by |cff00FF96Sukari|r
 ## Notes: Save the name of anything that you can mouseover to the clipboard.
 ## Author: Sukari-Zul'jin (EU)
-## Version: 1.4.2
+## Version: 2.0
 ## SavedVariables: NameCopyTooltipTextBool
 
 embeds.xml

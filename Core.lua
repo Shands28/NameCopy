@@ -5,9 +5,13 @@ local db
 function _G.NAME_COPY_ITEM()
     if _G.GameTooltip:NumLines() > 0 then
         local text = _G['GameTooltipTextLeft1']:GetText()
-        local d = {}
-        d.text = text
-        _G.StaticPopup_Show('ITEM_NAME_NAMECOPY', '', '', d)
+        -- local d = {}
+        -- d.text = text
+        -- _G.StaticPopup_Show('ITEM_NAME_NAMECOPY', '', '', d)
+        local e = DEFAULT_CHAT_FRAME.editBox
+        ChatEdit_ActivateChat(e)
+        e:SetText(text)
+        e:HighlightText()
     end
 end
 
@@ -126,21 +130,21 @@ end
 
 frame:SetScript('OnEvent', eventHandler)
 
-_G.StaticPopupDialogs['ITEM_NAME_NAMECOPY'] = {
-    text = 'Copy the name of the Item/NPC/Object',
-    button1 = 'Close',
-    OnAccept = function()
-    end,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    preferredIndex = 3,
-    OnShow = function(self, data)
-        self.editBox:SetText(data.text)
-        self.editBox:HighlightText()
-    end,
-    hasEditBox = true
-}
+-- _G.StaticPopupDialogs['ITEM_NAME_NAMECOPY'] = {
+--     text = 'Copy the name of the Item/NPC/Object',
+--     button1 = 'Close',
+--     OnAccept = function()
+--     end,
+--     timeout = 0,
+--     whileDead = true,
+--     hideOnEscape = true,
+--     preferredIndex = 3,
+--     OnShow = function(self, data)
+--         self.editBox:SetText(data.text)
+--         self.editBox:HighlightText()
+--     end,
+--     hasEditBox = true
+-- }
 
 _G.SLASH_NAMECOPY1 = "/nc"
 function _G.SlashCmdList.NAMECOPY(_)

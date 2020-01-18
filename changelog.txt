@@ -1,3 +1,5 @@
+version 2.0
+    Reworked to be more lightweight than it was already, now instead of a pop-up the name appears in chat
 version 1.4.2
     Bug Fixes
 version 1.4.1
