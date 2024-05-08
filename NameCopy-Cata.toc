@@ -1,0 +1,8 @@
+## Interface: 40400
+## Title: |cff00FF96NameCopy|r
+## Notes: Save the name of anything that you can mouseover to the clipboard.
+## Author: Sukari-Zul'jin (EU)
+## Version: 2.1.1
+## SavedVariables: NameCopyTooltipTextBool
+
+embeds.xml
